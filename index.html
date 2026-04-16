@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📘 شرح استخدام API - Anime Servers API</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #0b1120 0%, #111827 100%);
+            color: #e2e8f0;
+            font-family: 'Segoe UI', 'Tahoma', system-ui, sans-serif;
+            line-height: 1.6;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* header */
+        .header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #a5f3fc, #c084fc);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #1e293b;
+            padding: 0.3rem 0.8rem;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            color: #94a3b8;
+            margin-top: 0.5rem;
+        }
+
+        /* cards */
+        .card {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(8px);
+            border: 1px solid #334155;
+            border-radius: 1.5rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            transition: 0.2s;
+        }
+
+        .card:hover {
+            border-color: #5b6e8c;
+        }
+
+        .endpoint-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .method {
+            background: #0f172a;
+            color: #38bdf8;
+            font-family: monospace;
+            padding: 0.2rem 0.7rem;
+            border-radius: 30px;
+            font-size: 0.9rem;
+            border: 1px solid #1e293b;
+        }
+
+        .url {
+            background: #020617;
+            padding: 0.8rem 1rem;
+            border-radius: 1rem;
+            font-family: monospace;
+            font-size: 1rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+            border-left: 4px solid #38bdf8;
+        }
+
+        .param {
+            background: #1e293b;
+            padding: 0.2rem 0.5rem;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            color: #facc15;
+        }
+
+        pre {
+            background: #010409;
+            padding: 1rem;
+            border-radius: 1rem;
+            overflow-x: auto;
+            font-size: 0.85rem;
+            font-family: 'Fira Code', monospace;
+            margin: 1rem 0;
+            border: 1px solid #2d3a5e;
+        }
+
+        code {
+            color: #9cdcfe;
+        }
+
+        .btn-copy {
+            background: #1e293b;
+            border: none;
+            color: #94a3b8;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            transition: 0.2s;
+            margin-top: 0.5rem;
+        }
+
+        .btn-copy:hover {
+            background: #2d3a5e;
+            color: white;
+        }
+
+        .example-response {
+            background: #0a0f1a;
+            padding: 0.8rem;
+            border-radius: 1rem;
+            font-size: 0.8rem;
+            margin-top: 1rem;
+            border-right: 3px solid #38bdf8;
+        }
+
+        hr {
+            border-color: #1e293b;
+            margin: 1rem 0;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 2.5rem;
+            font-size: 0.8rem;
+            color: #5b6e8c;
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 1rem;
+            }
+            .endpoint-title {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>🎬 Anime Servers API</h1>
+        <div class="badge">⭐ REST API | مجاني | بدون مفتاح</div>
+        <p style="margin-top: 0.8rem;">ابحث عن الأنمي واستخرج روابط السيرفرات النظيفة (iframe, embed, streamtape, dood...)</p>
+    </div>
+
+    <!-- =========================  مقدمة عامة ========================= -->
+    <div class="card">
+        <h3>🔍 طريقة العمل</h3>
+        <p>✅ <strong>الخطوة 1</strong> : أرسل طلب <code>/search?q=</code> للحصول على قائمة الحلقات مع <code>id</code> فريد لكل حلقة.</p>
+        <p>✅ <strong>الخطوة 2</strong> : استخدم <code>/ep?id=</code> (مع الـ id المستلم) لاستخراج جميع سيرفرات المشاهدة النظيفة.</p>
+        <p>📌 قاعدة API: <span style="background:#0f172a;padding:2px 8px;border-radius:20px;">https://yourdomain.vercel.app</span> (استبدله برابطك بعد الرفع)</p>
+    </div>
+
+    <!-- =========================  ENDPOINT 1 : SEARCH ========================= -->
+    <div class="card">
+        <div class="endpoint-title">
+            🔎 /search
+            <span class="method">GET</span>
+        </div>
+        <p>يبحث عن أنمي حسب الكلمة المفتاحية ويعرض النتائج مع <strong class="param">id</strong> الخاص بكل حلقة.</p>
+        <div class="url">
+            https://your-api.vercel.app/search?q=<span style="color:#facc15;">{query}</span>
+        </div>
+        <div><span class="param">q</span> (required) – اسم الأنمي بالعربية أو الإنجليزية.</div>
+
+        <h4 style="margin-top: 1rem;">📌 مثال طلب (cURL)</h4>
+        <pre><code>curl "https://your-api.vercel.app/search?q=one%20piece"</code></pre>
+        <button class="btn-copy" data-code='curl "https://your-api.vercel.app/search?q=one%20piece"'>📋 نسخ</button>
+
+        <h4 style="margin-top: 1rem;">📟 مثال JavaScript (fetch)</h4>
+        <pre><code>fetch('https://your-api.vercel.app/search?q=one+piece')
+  .then(res => res.json())
+  .then(data => {
+      console.log(data.results);
+      // data.results[0].id  -> الرقم المستخدم للـ /ep
+  });</code></pre>
+        <button class="btn-copy" data-code="fetch('https://your-api.vercel.app/search?q=one+piece')
+  .then(res => res.json())
+  .then(data => console.log(data.results));">📋 نسخ</button>
+
+        <div class="example-response">
+            <strong>📦 نموذج الرد:</strong><br>
+            <pre style="margin-top: 5px;">{
+  "query": "one piece",
+  "count": 12,
+  "results": [
+    {
+      "id": 1,
+      "title": "One Piece Episode 1089",
+      "image": "https://hondram.site/thumb.jpg"
+    },
+    ...
+  ]
+}</pre>
+        </div>
+    </div>
+
+    <!-- =========================  ENDPOINT 2 : EPISODE SERVERS ========================= -->
+    <div class="card">
+        <div class="endpoint-title">
+            🎞️ /ep
+            <span class="method">GET</span>
+        </div>
+        <p>يستخرج روابط السيرفرات النظيفة (iframe, link, script) بناءً على <code>id</code> الذي حصلت عليه من البحث.</p>
+        <div class="url">
+            https://your-api.vercel.app/ep?id=<span style="color:#facc15;">{id}</span>
+        </div>
+        <div><span class="param">id</span> (required) – الرقم التعريفي للحلقة المستلم من /search</div>
+
+        <h4 style="margin-top: 1rem;">🧪 مثال (بعد البحث)</h4>
+        <pre><code>curl "https://your-api.vercel.app/ep?id=1"</code></pre>
+        <button class="btn-copy" data-code='curl "https://your-api.vercel.app/ep?id=1"'>📋 نسخ</button>
+
+        <h4 style="margin-top: 1rem;">🟢 جلب السيرفرات في تطبيقك (JS)</h4>
+        <pre><code>async function getServers(episodeId) {
+  const res = await fetch(`https://your-api.vercel.app/ep?id=${episodeId}`);
+  const data = await res.json();
+  // data.servers → [{ type: "iframe", url: "https://..." }, ...]
+  return data.servers;
+}</code></pre>
+        <button class="btn-copy" data-code="async function getServers(episodeId) {
+  const res = await fetch(`https://your-api.vercel.app/ep?id=${episodeId}`);
+  const data = await res.json();
+  return data.servers;
+}">📋 نسخ</button>
+
+        <div class="example-response">
+            <strong>📦 نموذج الرد من /ep</strong>
+            <pre>{
+  "id": 1,
+  "count": 3,
+  "servers": [
+    { "type": "iframe", "url": "https://vidmoly.to/e/abc123" },
+    { "type": "link", "url": "https://dood.wf/e/xyz789" },
+    { "type": "script", "url": "https://streamwish.com/embed/12345" }
+  ],
+  "source": "https://hondram.site/episode/one-piece-1089?watch=1"
+}</pre>
+        </div>
+        <p>💡 <strong>ملاحظة:</strong> الخاصية <code>type</code> توضح مصدر الرابط (iframe | link | script) ويمكنك استخدامها لتضمين الفيديو مباشرة.</p>
+    </div>
+
+    <!-- =========================  نصائح وملاحظات مهمة ========================= -->
+    <div class="card">
+        <h3>⚠️ ملاحظات هامة للمطورين</h3>
+        <ul style="margin-right: 1.5rem; margin-top: 0.5rem;">
+            <li>🔹 <strong>نظام الـ ID</strong> : يتم إنشاء الأرقام (1,2,3...) بشكل مؤقت في ذاكرة الخادم. قد تختلف ids من جلسة لأخرى.</li>
+            <li>🔹 <strong>مدة الاستجابة</strong> : قد تصل إلى 5-8 ثوانٍ لأن الـ API يجلب البيانات من الموقع المصدر مباشرة.</li>
+            <li>🔹 <strong>السيرفرات المستخرجة</strong> : تشمل VidMoly, Dood, StreamWish, StreamTape, وغيرها. يتم فلترة الروابط غير المرغوب فيها تلقائياً.</li>
+            <li>🔹 <strong>نشر الـ API على Vercel</strong> : استخدم ملفات <code>app.py</code> + <code>vercel.json</code> + <code>requirements.txt</code> (Flask, requests, beautifulsoup4).</li>
+            <li>🔹 <strong>قيود Vercel</strong> : timeout 10 ثوانٍ – قد تحتاج لتحسين الكود أو إعادة المحاولة.</li>
+        </ul>
+    </div>
+
+    <!-- =========================  تجربة مباشرة (Demo) ========================= -->
+    <div class="card">
+        <h3>🧪 تجربة مباشرة (اختبار)</h3>
+        <p>أدخل رابط API الخاص بك (بعد الرفع على Vercel) وجرّب البحث:</p>
+        <div style="display: flex; flex-wrap: wrap; gap: 10px; margin: 1rem 0;">
+            <input type="text" id="apiBaseInput" placeholder="https://your-app.vercel.app" style="flex:2; background:#0f172a; border:1px solid #334155; padding: 0.7rem; border-radius: 2rem; color:white; outline: none;">
+            <button id="saveBaseBtn" style="background:#2563eb; border:none; padding:0 1.5rem; border-radius: 2rem; cursor:pointer;">تعيين</button>
+        </div>
+        <div id="demoStatus" style="font-size: 0.85rem; color:#94a3b8;"></div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 1rem;">
+            <input type="text" id="searchQuery" placeholder="اسم الأنمي ... مثلاً: jujutsu kaisen" style="flex:2; background:#0f172a; border:1px solid #334155; padding: 0.7rem; border-radius: 2rem; color:white;">
+            <button id="searchBtn" style="background:#0f172a; border:1px solid #5b6e8c; padding:0 1.5rem; border-radius: 2rem; cursor:pointer;">🔍 بحث تجريبي</button>
+        </div>
+        <div id="demoResults" style="margin-top: 1rem; max-height: 250px; overflow-y: auto;"></div>
+    </div>
+
+    <div class="footer">
+        📡 API مخصص لاستخراج السيرفرات | لا يتم تخزين أي محتوى وسائط | يُستخدم للأغراض التعليمية
+    </div>
+</div>
+
+<script>
+    // حفظ رابط الـ API في localStorage
+    let API_BASE = localStorage.getItem("api_base") || "https://your-api.vercel.app";
+    document.getElementById("apiBaseInput").value = API_BASE;
+    const statusDiv = document.getElementById("demoStatus");
+
+    function setApiBase() {
+        let newBase = document.getElementById("apiBaseInput").value.trim();
+        if (newBase) {
+            if (newBase.endsWith("/")) newBase = newBase.slice(0, -1);
+            API_BASE = newBase;
+            localStorage.setItem("api_base", API_BASE);
+            statusDiv.innerHTML = "✅ تم تعيين الرابط: " + API_BASE;
+            setTimeout(() => statusDiv.innerHTML = "", 2000);
+        } else {
+            statusDiv.innerHTML = "⚠️ أدخل رابط صالح";
+        }
+    }
+    document.getElementById("saveBaseBtn").addEventListener("click", setApiBase);
+
+    // البحث التجريبي
+    const searchBtn = document.getElementById("searchBtn");
+    const searchQueryInput = document.getElementById("searchQuery");
+    const demoResultsDiv = document.getElementById("demoResults");
+
+    searchBtn.addEventListener("click", async () => {
+        const query = searchQueryInput.value.trim();
+        if (!query) {
+            demoResultsDiv.innerHTML = "<span style='color:#f97316'>✏️ أدخل اسم الأنمي أولاً</span>";
+            return;
+        }
+        if (API_BASE === "https://your-api.vercel.app" || !API_BASE) {
+            demoResultsDiv.innerHTML = "<span style='color:#ef4444'>⚠️ الرجاء تعيين رابط API الخاص بك أولاً (الحقل العلوي)</span>";
+            return;
+        }
+        demoResultsDiv.innerHTML = "<div style='color:#38bdf8'>⏳ جاري البحث ...</div>";
+        try {
+            const url = `${API_BASE}/search?q=${encodeURIComponent(query)}`;
+            const res = await fetch(url);
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const data = await res.json();
+            if (data.error) {
+                demoResultsDiv.innerHTML = `<span style='color:#f87171'>❌ خطأ: ${data.error}</span>`;
+                return;
+            }
+            if (data.results && data.results.length > 0) {
+                let html = `<div style="background:#0a0f1a; border-radius: 1rem; padding:0.7rem;">
+                                <strong>📺 نتائج (${data.count})</strong><br>`;
+                data.results.forEach(item => {
+                    html += `<div style="border-bottom:1px solid #1e293b; padding: 8px 0;">
+                                <span style="color:#facc15;">ID: ${item.id}</span> – ${item.title.substring(0, 60)}
+                                <button class="demo-copy-id" data-id="${item.id}" style="background:#1e293b; border:none; color:#a5f3fc; margin-right:8px; border-radius:20px; padding:2px 12px; font-size:0.7rem;">📋 نسخ id</button>
+                             </div>`;
+                });
+                html += `<div style="margin-top:10px;"><small>💡 استخدم id مع endpoint /ep للحصول على سيرفرات</small></div></div>`;
+                demoResultsDiv.innerHTML = html;
+
+                // إضافة أحداث النسخ لكل أزرار نسخ id
+                document.querySelectorAll(".demo-copy-id").forEach(btn => {
+                    btn.addEventListener("click", (e) => {
+                        const idVal = btn.getAttribute("data-id");
+                        navigator.clipboard.writeText(idVal);
+                        btn.innerText = "✅ تم";
+                        setTimeout(() => btn.innerText = "📋 نسخ id", 1500);
+                    });
+                });
+            } else {
+                demoResultsDiv.innerHTML = "<span>😓 لم يتم العثور على نتائج</span>";
+            }
+        } catch (err) {
+            demoResultsDiv.innerHTML = `<span style='color:#ef4444'>⚠️ فشل الاتصال: ${err.message}<br>تأكد أن رابط API صحيح ويعمل على Vercel</span>`;
+        }
+    });
+
+    // دالة عامة لنسخ النصوص من الأزرار
+    document.querySelectorAll(".btn-copy").forEach(btn => {
+        btn.addEventListener("click", () => {
+            const code = btn.getAttribute("data-code");
+            if (code) {
+                navigator.clipboard.writeText(code);
+                const originalText = btn.innerText;
+                btn.innerText = "✅ نسخ!";
+                setTimeout(() => btn.innerText = originalText, 1500);
+            }
+        });
+    });
+</script>
+</body>
+</html>
